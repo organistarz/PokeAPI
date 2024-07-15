@@ -12,11 +12,11 @@ phases:
     build:
         commands:
             - echo "$environment"
-            - npm run webpack
-            - echo -e "PORT=3001" >> .env.production
-            - echo -e "NODE_ENV=production" >> .env.production
-            - echo -e "LOG_LEVEL=debug" >> .env.production
-            - echo -e "JWT_SECRET_TOKEN=$JWT_SECRET_TOKEN" >> .env.production
+            - npm run webpack:dev
+            - echo -e "PORT=3001" >> .env.development
+            - echo -e "NODE_ENV=development" >> .env.development
+            - echo -e "LOG_LEVEL=debug" >> .env.development
+            - echo -e "JWT_SECRET_TOKEN=$JWT_SECRET_TOKEN" >> .env.development
 artifacts:
     files:
         - "build/server.js"
@@ -24,4 +24,4 @@ artifacts:
         - "package-lock.json"
         - "configuration/PokeAPI.service"
         - "scripts/*"
-        - ".env.production"
+        - ".env.development"

@@ -1,4 +1,4 @@
 build
-.env.local
+.env.development
 .env.development
 .env.production

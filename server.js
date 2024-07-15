@@ -10,7 +10,7 @@ const app = Express();
 if (process.env.NODE_ENV === 'production') {
 	require('dotenv').config({path: '.env.production'});
 } else {
-	require('dotenv').config({path: '.env.local'});
+	require('dotenv').config({path: '.env.development'});
 }
 
 // Cabeceras HTTP desactivadas
