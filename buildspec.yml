@@ -2,7 +2,7 @@ version: 0.2
 phases:
     install:
         runtime-versions:
-            nodejs: 24
+            nodejs: 20
         commands:
             - npm install -g webpack webpack-cli
             - npm install --install-links=false
