@@ -1,4 +1,7 @@
 version: 0.2
+env:
+    parameter-store:
+        JWT_SECRET_TOKEN: pokeapi_jwt_secret_token
 phases:
     install:
         runtime-versions:
@@ -9,12 +12,11 @@ phases:
     build:
         commands:
             - echo "$environment"
-            - |
-              if [ "$environment" = "prod" ]; then 
-                npm run webpack
-              else
-                npm run webpack:dev
-              fi
+            - npm run webpack
+            - echo -e "PORT=3001" >> .env.production
+            - echo -e "NODE_ENV=production" >> .env.production
+            - echo -e "LOG_LEVEL=debug" >> .env.production
+            - echo -e "JWT_SECRET_TOKEN=$JWT_SECRET_TOKEN" >> .env.production
 artifacts:
     files:
         - "build/server.js"
@@ -22,4 +24,4 @@ artifacts:
         - "package-lock.json"
         - "configuration/PokeAPI.service"
         - "scripts/*"
-
+        - ".env.production"

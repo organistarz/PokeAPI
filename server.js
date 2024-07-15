@@ -7,10 +7,11 @@ import * as routes from "./src/routes";
 
 const app = Express();
 
-if (process.env.NODE_ENV === 'development')
-	require('dotenv').config({ path: '.env.local' });
-else
-	require('dotenv').config({ path: '.env.production' });
+if (process.env.NODE_ENV === 'production') {
+	require('dotenv').config({path: '.env.production'});
+} else {
+	require('dotenv').config({path: '.env.local'});
+}
 
 // Cabeceras HTTP desactivadas
 app.disable("etag");
