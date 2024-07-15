@@ -7,6 +7,7 @@
     "start": "node build/server.js",
     "debug": "node --inspect=0.0.0.0:9230 -r source-map-support/register build/server.js | pino-pretty",
     "webpack": "webpack --env production --config webpack.config.js",
+    "webpack:dev": "webpack --env development --config webpack.config.js",
     "webpack:local": "webpack --env development --env dotenv=local --watch --progress --config webpack.config.js",
     "test": "mocha -r test/**/*.test.js",
     "lint": "eslint .",

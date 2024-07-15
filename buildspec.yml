@@ -10,11 +10,11 @@ phases:
         commands:
             - echo "$environment"
             - |
-                if [ "$environment" = "prod" ]; then 
-                  npm run webpack
-                else
-                  npm run webpack:dev
-                fi
+              if [ "$environment" = "prod" ]; then 
+                npm run webpack
+              else
+                npm run webpack:dev
+              fi
 artifacts:
     files:
         - "build/server.js"
