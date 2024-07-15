@@ -1,0 +1,155 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Resources:
+    Bucket:
+        Type: AWS::S3::Bucket
+
+    CodeBuildRole:
+        Type: AWS::IAM::Role
+        Properties:
+            AssumeRolePolicyDocument:
+                Statement:
+                    - Effect: Allow
+                      Principal:
+                        Service: codebuild.amazonaws.com
+                      Action: sts:AssumeRole
+            Path: "/"
+            Policies:
+              - PolicyName: CodeBuildRolePolicy
+                PolicyDocument:
+                  Statement:
+                    - Effect: Allow
+                      Action: '*'
+                      Resource: '*'
+    CodeBuildProject:
+        Type: AWS::CodeBuild::Project
+        Properties:
+            ServiceRole: !GetAtt CodeBuildRole.Arn
+            Artifacts:
+                Type: CODEPIPELINE
+            Environment:
+                ComputeType: BUILD_GENERAL1_SMALL
+                Image: "aws/codebuild/standard:7.0"
+                Type: LINUX_CONTAINER
+            Source:
+                Type: CODEPIPELINE
+            TimeoutInMinutes: 30
+
+    CodeDeployRole:
+        Type: AWS::IAM::Role
+        Properties:
+            AssumeRolePolicyDocument:
+                Statement:
+                    - Effect: Allow
+                      Principal:
+                          Service:
+                              - codedeploy.amazonaws.com
+                      Action: sts:AssumeRole
+            Path: "/"
+            Policies:
+                - PolicyName: CodeDeployRolePolicy
+                  PolicyDocument:
+                      Statement:
+                          - Effect: Allow
+                            Action: '*'
+                            Resource: '*'
+    CodeDeployApplication:
+        Type: AWS::CodeDeploy::Application
+    CodeDeployDeploymentGroup:
+        Type: AWS::CodeDeploy::DeploymentGroup
+        Properties:
+            ApplicationName: !Ref CodeDeployApplication
+            DeploymentConfigName: CodeDeployDefault.OneAtATime
+            DeploymentStyle:
+                DeploymentOption: "WITHOUT_TRAFFIC_CONTROL"
+            Ec2TagFilters: [{
+                Type: 'KEY_AND_VALUE',
+                Key: 'project-name',
+                Value: 'pokeapi'
+            }]
+            ServiceRoleArn: !GetAtt CodeDeployRole.Arn
+
+    ServerInstance:
+        Type: AWS::EC2::Instance
+        Properties:
+            ImageId: 'ami-04a81a99f5ec58529'
+            InstanceType: t2.micro
+            KeyName: VJ573701
+            SubnetId: subnet-06ddfdca5c01febd9
+            Tags:
+                - Key: 'project-name'
+                  Value: 'pokeapi'
+
+
+    GitHubConnection:
+        Type: AWS::CodeStarConnections::Connection
+        Properties:
+            ConnectionName: PokeAPI
+            ProviderType: GitHub
+
+    CodePipelineRole:
+        Type: AWS::IAM::Role
+        Properties:
+            AssumeRolePolicyDocument:
+                Statement:
+                    -   Effect: Allow
+                        Principal:
+                            Service:
+                                - codepipeline.amazonaws.com
+                        Action: sts:AssumeRole
+            Path: "/"
+            Policies:
+                -   PolicyName: CodePipelineRolePolicy
+                    PolicyDocument:
+                        Statement:
+                            -   Effect: Allow
+                                Action: '*'
+                                Resource: '*'
+
+    CodePipeline:
+        Type: AWS::CodePipeline::Pipeline
+        Properties:
+            RoleArn: !GetAtt CodePipelineRole.Arn
+            Stages:
+                -   Name: Source
+                    Actions:
+                        -   Name: Github
+                            ActionTypeId:
+                                Category: Source
+                                Owner: AWS
+                                Provider: CodeStarSourceConnection
+                                Version: 1
+                            OutputArtifacts:
+                                -   Name: source_artifacts
+                            Configuration:
+                                FullRepositoryId: organistarz/PokeAPI
+                                BranchName: main
+                                ConnectionArn: !Ref GitHubConnection
+                            RunOrder: 1
+                -   Name: Build
+                    Actions:
+                        -   Name: PokeAPI
+                            ActionTypeId:
+                                Category: Build
+                                Owner: AWS
+                                Provider: CodeBuild
+                                Version: 1
+                            InputArtifacts:
+                                -   Name: source_artifacts
+                            OutputArtifacts:
+                                -   Name: build_artifacts
+                            Configuration:
+                                ProjectName: !Ref CodeBuildProject
+                            RunOrder: 1
+                -   Name: Deploy
+                    Actions:
+                        -   Name: PokeAPI
+                            ActionTypeId:
+                                Category: Deploy
+                                Owner: AWS
+                                Provider: CodeDeploy
+                                Version: 1
+                            InputArtifacts:
+                                -   Name: build_artifacts
+                            Configuration:
+                                ApplicationName: !Ref CodeDeployApplication
+                                DeploymentGroupName: !Ref CodeDeployDeploymentGroup
