@@ -1,0 +1,22 @@
+[Unit]
+Description=PokeAPI
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/node /var/www/PokeAPI/server.js
+# Required on some systems
+WorkingDirectory=/var/www/PokeAPI
+Restart=always
+RestartSec=10
+# Configure service limits
+LimitNOFILE=infinity
+LimitNPROC=infinity
+LimitCORE=infinity
+# Output to syslog
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=PokeAPI
+User=ubuntu
+
+[Install]
+WantedBy=multi-user.target

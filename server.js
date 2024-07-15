@@ -9,6 +9,8 @@ const app = Express();
 
 if (process.env.NODE_ENV === 'development')
 	require('dotenv').config({ path: '.env.local' });
+else
+	require('dotenv').config({ path: '.env.production' });
 
 // Cabeceras HTTP desactivadas
 app.disable("etag");

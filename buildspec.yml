@@ -1,0 +1,25 @@
+version: 0.2
+phases:
+    install:
+        runtime-versions:
+            nodejs: 24
+        commands:
+            - npm install -g webpack webpack-cli
+            - npm install --install-links=false
+    build:
+        commands:
+            - echo "$environment"
+            - |
+                if [ "$environment" = "prod" ]; then 
+                  npm run webpack
+                else
+                  npm run webpack:dev
+                fi
+artifacts:
+    files:
+        - "build/server.js"
+        - "package.json"
+        - "package-lock.json"
+        - "configuration/PokeAPI.service"
+        - "scripts/*"
+
