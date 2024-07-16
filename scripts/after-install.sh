@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash -x
 
 cd /var/www/PokeAPI && sudo npm install --omit=dev --install-links=false
 

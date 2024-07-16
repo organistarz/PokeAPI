@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash -x
 
 sudo systemctl status PokeAPI
 sudo rm -frv /var/www/PokeAPI/scripts /var/www/PokeAPI/configuration /var/www/PokeAPI/appspec.yml
