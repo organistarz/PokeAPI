@@ -1,0 +1,280 @@
+openapi: "3.0.0"
+info:
+    version: 1.0.0
+    title: PokeAPI
+    description: A PokeAPI specification
+servers:
+    - url: http://127.0.0.1:3001
+paths:
+      /berry:
+          get:
+              summary: Berries are small fruits that can provide HP and status condition restoration, stat enhancement, and even damage negation when eaten by Pokémon.
+              responses:
+                  "200":
+                      description: A JSON array of  objects
+                      content:
+                          application/json:
+                              schema:
+                                  type: array
+                                  items:
+                                      $ref: '#/components/schemas/Berry'
+      /evolution-chain:
+          get:
+              summary: Evolution chains are essentially family trees. They start with the lowest stage within a family and detail evolution conditions for each as well as Pokémon they can evolve into up through the hierarchy.
+              responses:
+                  "200":
+                      description: A JSON array of  objects
+                      content:
+                          application/json:
+                              schema:
+                                  type: array
+                                  items:
+                                      $ref: '#/components/schemas/EvolutionChain'
+      /generation:
+          get:
+              summary: A generation is a grouping of the Pokémon games that separates them based on the Pokémon they include. In each generation, a new set of Pokémon, Moves, Abilities and Types that did not exist in the previous generation are released.
+              responses:
+                  "200":
+                      description: A JSON array of  objects
+                      content:
+                          application/json:
+                              schema:
+                                  type: array
+                                  items:
+                                      $ref: '#/components/schemas/Generation'
+      /item:
+          get:
+              summary: An item is an object in the games which the player can pick up, keep in their bag, and use in some manner. They have various uses, including healing, powering up, helping catch Pokémon, or to access a new area.
+              responses:
+                  "200":
+                      description: A JSON array of  objects
+                      content:
+                          application/json:
+                              schema:
+                                  type: array
+                                  items:
+                                      $ref: '#/components/schemas/Item'
+      /pokemon:
+          get:
+              summary: Pokémon are the creatures that inhabit the world of the Pokémon games. They can be caught using Pokéballs and trained by battling with other Pokémon. Each Pokémon belongs to a specific species but may take on a variant which makes it differ from other Pokémon of the same species, such as base stats, available abilities and typings.
+              responses:
+                  "200":
+                      description: A JSON array of  objects
+                      content:
+                          application/json:
+                              schema:
+                                  type: array
+                                  items:
+                                      $ref: '#/components/schemas/Pokemon'
+      /pokemon-custom/{idOrName}:
+          get:
+              summary: Pokémon are the creatures that inhabit the world of the Pokémon games. They can be caught using Pokéballs and trained by battling with other Pokémon. Each Pokémon belongs to a specific species but may take on a variant which makes it differ from other Pokémon of the same species, such as base stats, available abilities and typings.
+              parameters:
+                  - name: idOrName
+                    in: path
+                    required: true
+                    schema:
+                        type: string
+                    description: The ID or name of the pokemon.
+              responses:
+                  "200":
+                      description: A JSON array of  objects
+                      content:
+                          application/json:
+                              schema:
+                                  type: array
+                                  items:
+                                      $ref: '#/components/schemas/PokemonCustom'
+components:
+    schemas:
+        Berry:
+            type: object
+            description: A schema for Berry
+            properties:
+                id:
+                    type: integer
+                    description: The identifier for this resource.
+                name:
+                    type: string
+                    description: The name for this resource.
+                growth_time:
+                    type: integer
+                    description: Time it takes the tree to grow one stage, in hours. Berry trees go through four of these growth stages before they can be picked.
+                max_harvest:
+                    type: integer
+                    description: The maximum number of these berries that can grow on one tree in Generation IV.
+                natural_gift_power:
+                    type: integer
+                    description: The power of the move "Natural Gift" when used with this Berry.
+                size:
+                    type: integer
+                    description: The size of this Berry, in millimeters.
+                smoothness:
+                    type: integer
+                    description: The smoothness of this Berry, used in making Pokéblocks or Poffins.
+                soil_dryness:
+                    type: integer
+                    description: The speed at which this Berry dries out the soil as it grows. A higher rate means the soil dries more quickly.
+                flavors:
+                    type: array
+                    description: A list of references to each flavor a berry can have and the potency of each of those flavors in regard to this berry.
+                    items:
+                        type: object
+                item:
+                    type: array
+                    description: Berries are actually items. This is a reference to the item specific data for this berry.
+                    items:
+                        type: object
+                natural_gift_type:
+                    type: array
+                    description: The type inherited by "Natural Gift" when used with this Berry.
+                    items:
+                        type: object
+        EvolutionChain:
+            type: object
+            description: A schema for EvolutionChain
+            properties:
+                id:
+                    type: integer
+                    description: The identifier for this resource.
+                baby_trigger_item:
+                    type: object
+                    description: The item that a Pokémon would be holding when mating that would trigger the egg hatching a baby Pokémon rather than a basic Pokémon.
+                chain:
+                    type: object
+                    description: The base chain link object. Each link contains evolution details for a Pokémon in the chain. Each link references the next Pokémon in the natural evolution order.
+        Generation:
+            type: object
+            description: A schema for Generation
+            properties:
+                id:
+                    type: integer
+                    description: The identifier for this resource.
+                name:
+                    type: string
+                    description: The name for this resource.
+                abilities:
+                    type: object
+                    description: A list of abilities that were introduced in this generation.
+                names:
+                    type: array
+                    description: The name of this resource listed in different languages.
+                    items:
+                        type: object
+                main_region:
+                    type: object
+                    description: The main region travelled in this generation.
+                moves:
+                    type: object
+                    description: A list of moves that were introduced in this generation.
+                pokemon_species:
+                    type: object
+                    description: A list of Pokémon species that were introduced in this generation.
+                types:
+                    type: object
+                    description: A list of types that were introduced in this generation.
+                version_groups:
+                    type: object
+                    description: A list of version groups that were introduced in this generation.
+        Item:
+            type: object
+            description: A chema for Item
+            properties:
+                id:
+                    type: integer
+                    description: The identifier for this resource.
+                name:
+                    type: string
+                    description: The name for this resource.
+                cost:
+                    type: integer
+                    description: The price of this item in stores.
+                fling_power:
+                    type: integer
+                    description: The power of the move Fling when used with this item.
+                fling_effect:
+                    type: object
+                    description: The effect of the move Fling when used with this item.
+                attributes:
+                    type: array
+                    description: A list of attributes this item has.
+                    items:
+                        type: object
+        Pokemon:
+            type: object
+            description: A schema for Pokemon
+            properties:
+                id:
+                    type: integer
+                    description: The identifier for this resource.
+                name:
+                    type: string
+                    description: The name for this resource.
+                base_experience:
+                    type: integer
+                    description: The base experience gained for defeating this Pokémon.
+                height:
+                    type: integer
+                    description: The height of this Pokémon in decimetres.
+                is_default:
+                    type: boolean
+                    description: Set for exactly one Pokémon used as the default for each species.
+                order:
+                    type: integer
+                    description: Order for sorting. Almost national order, except families are grouped together.
+                weight:
+                    type: integer
+                    description: The weight of this Pokémon in hectograms.
+                abilities:
+                    type: array
+                    description: A list of abilities this Pokémon could potentially have.
+                    items:
+                        type: object
+                forms:
+                    type: array
+                    description: A list of forms this Pokémon can take on.
+                    items:
+                        type: object
+                game_indices:
+                    type: array
+                    description: A list of game indices relevent to Pokémon item by generation.
+                    items:
+                        type: object
+                held_items:
+                    type: array
+                    description: A list of items this Pokémon may be holding when encountered.
+                    items:
+                        type: object
+                location_area_encounters:
+                    type: string
+                    description: A link to a list of location areas, as well as encounter details pertaining to specific versions.
+                moves:
+                    type: array
+                    description: A list of moves along with learn methods and level details pertaining to specific version groups.
+                    items:
+                        type: object
+                past_types:
+                    type: array
+                    description: A list of details showing types this pokémon had in previous generations
+                    items:
+                        type: object
+                stats:
+                    type: array
+                    description: A list of base stat values for this Pokémon.
+                    items:
+                        type: object
+                types:
+                    type: array
+                    description: A list of details showing types this Pokémon has.
+                    items:
+                        type: object
+        PokemonCustom:
+            type: object
+            description: A custom schema for detailing Pokemon abilities
+            properties:
+                abilities:
+                    type: array
+                    items:
+                        type: object
+
+

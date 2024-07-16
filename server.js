@@ -4,7 +4,7 @@ import pinoHttp from 'pino-http';
 import {logger} from "./src/logger";
 import {authorization} from "./src/authorization";
 import * as routes from "./src/routes";
-
+console.log(routes);
 const app = Express();
 
 if (process.env.NODE_ENV === 'production') {
