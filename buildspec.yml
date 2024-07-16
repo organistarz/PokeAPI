@@ -13,10 +13,10 @@ phases:
         commands:
             - echo "$environment"
             - npm run webpack:dev
-            - echo -e "PORT=3001" >> .env.development
-            - echo -e "NODE_ENV=development" >> .env.development
-            - echo -e "LOG_LEVEL=debug" >> .env.development
-            - echo -e "JWT_SECRET_TOKEN=$JWT_SECRET_TOKEN" >> .env.development
+            - echo "PORT=3001" >> .env.development
+            - echo "NODE_ENV=development" >> .env.development
+            - echo "LOG_LEVEL=debug" >> .env.development
+            - echo "JWT_SECRET_TOKEN=$JWT_SECRET_TOKEN" >> .env.development
 artifacts:
     files:
         - "build/server.js"
