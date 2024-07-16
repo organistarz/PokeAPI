@@ -15,13 +15,6 @@ hooks:
     AfterInstall:
         - location: scripts/after-install.sh
           runas: root
-        - location: scripts/install-aws-profile.sh
-          runas: ubuntu
-    ApplicationStart:
-        - location: scripts/elb-v2/register_with_elb.sh
-          timeout: 300
-        - location: scripts/application-start.sh
-          runas: root
     ValidateService:
         - location: scripts/validate-service.sh
           runas: root
