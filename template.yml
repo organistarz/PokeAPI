@@ -119,6 +119,25 @@ Resources:
                       Effect: Allow
                       Principal:
                           Service: ec2.amazonaws.com
+    ServerInstancePolicy:
+        Type: AWS::IAM::Policy
+        Properties:
+            PolicyName: !Join
+                - '-'
+                - - !Ref AWS::StackName
+                  - !Ref AWS::Region
+                  - server-instance-policy
+            Roles:
+                - !Ref ServerInstanceRole
+            PolicyDocument:
+                Version: 2012-10-17
+                Statement:
+                    -   Action:
+                            - s3:GetObject
+                            - s3:PutObject
+                        Effect: Allow
+                        Resource:
+                            - '*'
     ServerInstance:
         Type: AWS::EC2::Instance
         Properties:
