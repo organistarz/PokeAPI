@@ -1,9 +1,14 @@
 AWSTemplateFormatVersion: '2010-09-09'
+Parameters:
+    KeyName:
+        Type: String
+        Default: VK305190
+    SubnetId:
+        Type: String
+        Default: subnet-0a9192211bde64124
 Resources:
-
     ArtifactStore:
         Type: AWS::S3::Bucket
-
     CodeBuildRole:
         Type: AWS::IAM::Role
         Properties:
@@ -34,7 +39,6 @@ Resources:
             Source:
                 Type: CODEPIPELINE
             TimeoutInMinutes: 30
-
     CodeDeployRole:
         Type: AWS::IAM::Role
         Properties:
@@ -68,25 +72,83 @@ Resources:
                 Value: 'pokeapi'
             }]
             ServiceRoleArn: !GetAtt CodeDeployRole.Arn
-
+    ServerInstanceProfile:
+        Type: AWS::IAM::InstanceProfile
+        Properties:
+            InstanceProfileName:
+                Fn::Join:
+                    - "-"
+                    -   - !Ref AWS::StackName
+                        - !Ref AWS::Region
+                        - "server-instance-profile"
+            Path: /
+            Roles:
+                - !Ref ServerInstanceRole
+    ServerInstanceSecurityGroup:
+        Type: AWS::EC2::SecurityGroup
+        Properties:
+            GroupDescription: Enable HTTP/HTTPS access for EC2 instances
+            SecurityGroupIngress:
+                -   IpProtocol: "tcp"
+                    FromPort: 22
+                    ToPort: 22
+                    CidrIp: 0.0.0.0/0
+                -   IpProtocol: "tcp"
+                    FromPort: 80
+                    ToPort: 80
+                    CidrIp: 0.0.0.0/0
+                -   IpProtocol: "tcp"
+                    FromPort: 443
+                    ToPort: 443
+                    CidrIp: 0.0.0.0/0
+                -   IpProtocol: "tcp"
+                    FromPort: 3001
+                    ToPort: 3001
+                    CidrIp: 0.0.0.0/0
+    ServerInstanceRole:
+        Type: AWS::IAM::Role
+        Properties:
+            RoleName: !Join
+                - '-'
+                - - !Ref AWS::StackName
+                  - !Ref AWS::Region
+                  - server-instance-role
+            AssumeRolePolicyDocument:
+                Statement:
+                    - Action: 'sts:AssumeRole'
+                      Effect: Allow
+                      Principal:
+                          Service: ec2.amazonaws.com
     ServerInstance:
         Type: AWS::EC2::Instance
         Properties:
             ImageId: 'ami-04a81a99f5ec58529'
             InstanceType: t2.micro
-            KeyName: VJ573701
-            SubnetId: subnet-06ddfdca5c01febd9
+            KeyName: VK305190
+            SubnetId: subnet-0a9192211bde64124
+            IamInstanceProfile: !Ref ServerInstanceProfile
+            SecurityGroupIds:
+                - !GetAtt ServerInstanceSecurityGroup.GroupId
+            UserData:
+                Fn::Base64:
+                    Fn::Join:
+                        - "\n"
+                        -   - "#!/bin/bash -x"
+                            - "export DEBIAN_FRONTEND=noninteractive"
+                            - "sudo apt-get update"
+                            - "sudo apt-get upgrade -yq"
+                            - "sudo apt-get install -y ruby"
+                            - Fn::Sub: "wget https://aws-codedeploy-${AWS::Region}.s3.amazonaws.com/latest/install"
+                            - "sudo chmod +x ./install"
+                            - "sudo ./install auto"
             Tags:
                 - Key: 'project-name'
                   Value: 'pokeapi'
-
-
     GitHubConnection:
         Type: AWS::CodeStarConnections::Connection
         Properties:
             ConnectionName: PokeAPI
             ProviderType: GitHub
-
     CodePipelineRole:
         Type: AWS::IAM::Role
         Properties:
@@ -105,7 +167,6 @@ Resources:
                             -   Effect: Allow
                                 Action: '*'
                                 Resource: '*'
-
     CodePipeline:
         Type: AWS::CodePipeline::Pipeline
         Properties:
