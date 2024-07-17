@@ -3,7 +3,7 @@ Description=PokeAPI
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/node /var/www/PokeAPI/server.js
+ExecStart=/usr/bin/node /var/www/PokeAPI/build/server.js
 # Required on some systems
 WorkingDirectory=/var/www/PokeAPI
 Restart=always
